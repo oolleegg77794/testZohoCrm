@@ -18,14 +18,20 @@ class ZohoController extends Controller
 {
     public function index()
     {
-        return view('index');
+        $this->auth();
+
+        $deals = ZCRMModule::getInstance("Accounts");
+        $dealsRecords = $deals->getRecords();
+        $getAllDeals = $dealsRecords->getData();
+
+        return view('index')->with("data",$getAllDeals);
     }
 
     public function getRecords()
     {
         $this->auth();
 
-        $deals = ZCRMModule::getInstance("Tasks");
+        $deals = ZCRMModule::getInstance("Deals");
         $dealsRecords = $deals->getRecords();
         $getAllDeals = $dealsRecords->getData();
         dd($getAllDeals);
@@ -39,6 +45,8 @@ class ZohoController extends Controller
         $dealsRecord = ZCRMRecord::getInstance("Deals",null);
 
         $dealsRecord->setFieldValue("Deal_Name",$request->input('name'));
+        $dealsRecord->setFieldValue("Account_Name",$request->input('account_name'));
+        $dealsRecord->setFieldValue("Description",$request->input('description'));
         $dealsRecord->setFieldValue("Amount",$request->input('amount'));
 
         $info = $dealsModule->createRecords([$dealsRecord]);
